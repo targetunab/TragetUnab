@@ -1,0 +1,415 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Net;
+using System.Configuration;
+using System.IO;
+using System.Data.SqlClient;
+using System.Security.Principal;
+using System.Runtime.InteropServices;
+using System.Web.UI.WebControls;
+
+namespace Exproges
+{
+    public class Repositorio
+    {
+        public Repositorio()
+        {
+
+        }
+
+        public static int SaveFile(FileUpload fileUpload, int tipo, int tipoRelacion, int idArchivo, string descripcion = "")
+        {
+            //Obtengo Datos de Coneccion
+            string RutaServer = ConfigurationManager.AppSettings["RutaRepositorio"];
+            string UsuarioServer = ConfigurationManager.AppSettings["UsuarioRepositorio"];
+            string Pass = ConfigurationManager.AppSettings["PassRepositorio"];
+            string Dominio = ConfigurationManager.AppSettings["DominioRepositorio"];
+
+            //Determina el nombre del archivo a Guardar
+            string NewFileName = System.Guid.NewGuid().ToString();
+
+            //Determino Ruta final del Archivo
+            string FullPath = Path.Combine(RutaServer, NewFileName);
+
+            //Obtengo el binario del archivo
+            byte[] Binario = fileUpload.FileBytes;
+
+            Boolean Warning = false;
+
+            using (ImpersonateUser Impersonate = new ImpersonateUser())
+            {
+                if (!Impersonate.ImpersonateValidUser(UsuarioServer, Dominio, Pass))
+                {
+                    throw new Exception("Las credenciales para acceso al repositorio no son válidas.");
+                }
+                else
+                {
+                    try
+                    {
+                        if (File.Exists(FullPath))
+                            Warning = true;
+
+                        if (!Warning)
+                        {
+                            File.WriteAllBytes(FullPath, Binario);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception("No se ha agregado el documento al repositório: " + ex.Message);
+
+                    }
+                    finally
+                    {
+                        Impersonate.UndoImpersonation();
+                    }
+
+                }
+
+            }
+
+            //Id del Archivo Acreado
+            int Id = 0;
+
+            if (Warning)
+            {
+                throw new Exception("El archivo ya existe");
+            }
+            else
+            {
+                try
+                {
+                    //Logia de Guardado en la base de Datos
+                    SqlCommand cmdExecute = Conexion.GetCommand("INS_ARCHIVO");
+                    cmdExecute.Parameters.AddWithValue("@ID", Id).Direction = System.Data.ParameterDirection.Output;
+                    cmdExecute.Parameters.AddWithValue("@ID_ARCHIVO", idArchivo);
+                    cmdExecute.Parameters.AddWithValue("@CONTENIDO", fileUpload.PostedFile.ContentType);
+                    cmdExecute.Parameters.AddWithValue("@TIPO", tipo.ToString());
+                    cmdExecute.Parameters.AddWithValue("@RUTA", NewFileName);
+                    cmdExecute.Parameters.AddWithValue("@NOMBRE", fileUpload.FileName);
+                    cmdExecute.Parameters.AddWithValue("@EXTENSION", Path.GetExtension(fileUpload.FileName));
+                    if(descripcion !="")cmdExecute.Parameters.AddWithValue("@DESCRIPCION", descripcion);
+                    cmdExecute.Parameters.AddWithValue("@TAMANO", fileUpload.FileContent.Length.ToString());
+                    cmdExecute.Parameters.AddWithValue("@TIPO_RELACION", tipoRelacion.ToString());
+                    cmdExecute.Parameters.AddWithValue("@USUARIO", Exproges.Session.UsuarioId());
+                    cmdExecute.Parameters.AddWithValue("@HOST", Exproges.Session.RemoteHost());
+                    cmdExecute.ExecuteNonQuery();
+                    cmdExecute.Connection.Close();
+                    Id = (int)cmdExecute.Parameters["@ID"].Value;
+                    return Id;
+                }
+                catch (Exception ex)
+                {
+                    //Elimino el archivo creado
+                    using (ImpersonateUser Impersonate = new ImpersonateUser())
+                    {
+                        if (!Impersonate.ImpersonateValidUser(UsuarioServer, Dominio, Pass))
+                        {
+                            throw new Exception("Las credenciales para acceso al repositorio no son válidas.");
+                        }
+                        else
+                        {
+                            try
+                            {
+                                if (File.Exists(FullPath))
+                                    File.Delete(FullPath);
+                            }
+                            catch (Exception)
+                            {
+                                throw new Exception("No se ha agregado el documento al repositório: " + ex.Message);
+                            }
+                            finally
+                            {
+                                Impersonate.UndoImpersonation();
+                            }
+                        }
+                    }
+                    Tools.tools.ClientAlert(ex.Message);
+                }
+                return Id;
+            }
+        }
+                
+        //Remover
+        public static Boolean RemoveFile(int FileId)
+        {
+            //Obtengo Datos de Coneccion
+            string RutaServer = ConfigurationManager.AppSettings["RutaRepositorio"];
+            string Usuario = ConfigurationManager.AppSettings["UsuarioRepositorio"];
+            string Pass = ConfigurationManager.AppSettings["PassRepositorio"];
+            string Dominio = ConfigurationManager.AppSettings["DominioRepositorio"];
+
+            //Ruta del Archivo
+            string Ruta = "";
+            using (SqlDataReader drArchivo = Conexion.GetDataReader("SEL_ARCHIVOS @ID=" + FileId + ", @USUARIO= " + Exproges.Session.UsuarioId()))
+            {
+                if (drArchivo.Read())
+                {
+                    Ruta = drArchivo["ARC_RUTA"].ToString();
+                }
+            }
+
+            //Determino Ruta final del Archivo
+            string FullPath = Path.Combine(RutaServer, Ruta);
+
+            Boolean Warning = false;
+
+            using (ImpersonateUser Impersonate = new ImpersonateUser())
+            {
+                if (!Impersonate.ImpersonateValidUser(Usuario, Dominio, Pass))
+                {
+                    throw new Exception("Las credenciales para acceso al repositorio no son válidas.");
+                }
+                else
+                {
+                    try
+                    {
+                        if (!File.Exists(FullPath))
+                            Warning = true;
+                        else
+                            File.Delete(FullPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(ex.Message);
+                    }
+                    finally
+                    {
+                        Impersonate.UndoImpersonation();
+                    }
+
+                }
+
+            }
+            
+            if (Warning)
+            {
+                throw new Exception("El archivo no existe");
+            }
+            else
+            {
+                try
+                {
+                    //Logica de Eliminacion en la base de Datos
+                    SqlCommand cmdExecute = Conexion.GetCommand("DEL_ARCHIVO");
+                    cmdExecute.Parameters.AddWithValue("@ID", FileId);
+                    cmdExecute.Parameters.AddWithValue("@USUARIO", Exproges.Session.UsuarioId());
+                    cmdExecute.ExecuteNonQuery();
+                    cmdExecute.Connection.Close();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    //Tools.MensajeException.NotificacionExceptionMail(ex.Message);
+
+                    Tools.tools.ClientAlert(ex.Message);
+                }
+                return false;
+            }
+        }
+
+        //Trae el archivo en Binario
+        public static byte[] GetFileContent(int FileId = 0, string Codigo = "")
+        {
+            //Obtengo Datos de Coneccion
+            string RutaServer = ConfigurationManager.AppSettings["RutaRepositorio"];
+            string Usuario = ConfigurationManager.AppSettings["UsuarioRepositorio"];
+            string Pass = ConfigurationManager.AppSettings["PassRepositorio"];
+            string Dominio = ConfigurationManager.AppSettings["DominioRepositorio"];
+
+            //Ruta del Archivo
+            string Ruta = "";
+
+            if (FileId > 0)
+            {
+                using (SqlDataReader drArchivo = Conexion.GetDataReader("SEL_ARCHIVOS @ID=" + FileId + ", @USUARIO= " + Exproges.Session.UsuarioId()))
+                {
+                    if (drArchivo.Read())
+                    {
+                        Ruta = drArchivo["ARC_RUTA"].ToString();
+                    }
+                    else 
+                    {
+                        throw new Exception("No existe el Archivo");
+                    }
+                }
+            }
+            else
+            {
+                using (SqlDataReader drArchivo = Conexion.GetDataReader("SEL_ARCHIVOS @CODIGO=" + Codigo + ", @USUARIO= " + Exproges.Session.UsuarioId()))
+                {
+                    if (drArchivo.Read())
+                    {
+                        Ruta = drArchivo["ARC_RUTA"].ToString();
+                    }
+                    else
+                    {
+                        throw new Exception("No existe el Archivo");
+                    }
+                }
+            }
+
+            //Determino Ruta final del Archivo
+            string FullPath = Path.Combine(RutaServer, Ruta);
+            
+            //Almaceno el contenido del archivo
+            byte[] archivo = null;
+
+            using (ImpersonateUser Impersonate = new ImpersonateUser())
+            {
+                if (!Impersonate.ImpersonateValidUser(Usuario, Dominio, Pass))
+                {
+                    throw new Exception("Las credenciales para acceso al repositorio no son válidas.");
+                }
+                else
+                {
+                    try
+                    {
+                        if (File.Exists(FullPath))
+                        {
+                            archivo = File.ReadAllBytes(FullPath);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(ex.Message);
+                    }
+                    finally
+                    {
+                        Impersonate.UndoImpersonation();
+                    }
+
+                }
+            }
+            return archivo;
+        }
+
+        //Trae el archivo
+        public static void GetFile(int FileId = 0, string Codigo = "", Boolean Attachement = false)
+        {
+            //Almaceno el contenido del archivo
+            byte[] archivo = GetFileContent(FileId, Codigo);
+
+            if (archivo != null)
+            { 
+     
+                SqlCommand cmdExecute = new SqlCommand();
+                cmdExecute.CommandText = "SEL_ARCHIVOS";
+                cmdExecute.Parameters.AddWithValue("@USUARIO", Exproges.Session.UsuarioId());
+                if (FileId > 0) cmdExecute.Parameters.AddWithValue("@ID", FileId);
+                if (Codigo != "") cmdExecute.Parameters.AddWithValue("@CODIGO", Codigo);
+                
+                using (SqlDataReader dr = Conexion.GetDataReader(cmdExecute))
+                {
+                    if (dr.Read())
+                    {
+                        HttpContext.Current.Response.Clear();
+                        HttpContext.Current.Response.Charset = "";
+                        HttpContext.Current.Response.ContentType = dr["ARC_CONTENIDO"].ToString();
+                        if (Attachement)
+                            HttpContext.Current.Response.AddHeader("content-disposition", "attachment; filename=" + dr["ARC_NOMBRE"].ToString());
+                        HttpContext.Current.Response.BinaryWrite(archivo);
+                        HttpContext.Current.Response.End();
+                    }
+                    else
+                    {
+                        throw new Exception("No existe el Archivo");
+                    }
+                }
+            }
+        }
+
+        //Impersonate
+        public  class ImpersonateUser : IDisposable
+        {
+
+            public const int LOGON32_LOGON_INTERACTIVE = 2;
+
+            public const int LOGON32_PROVIDER_DEFAULT = 0;
+
+            private WindowsImpersonationContext impersonationContext;
+            [DllImport("advapi32.dll")]
+            public static extern int LogonUserA(string lpszUserName, string lpszDomain, string lpszPassword, int dwLogonType, int dwLogonProvider, ref IntPtr phToken);
+            [DllImport("advapi32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+            public static extern int DuplicateToken(IntPtr hToken, int impersonationLevel, ref IntPtr hNewToken);
+
+            [DllImport("advapi32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+            public static extern bool RevertToSelf();
+
+            [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+            public static extern bool CloseHandle(IntPtr handle);
+
+            public bool ImpersonateValidUser(string userName, string domain, string password)
+            {
+                WindowsIdentity tempWindowsIdentity = default(WindowsIdentity);
+                IntPtr token = IntPtr.Zero;
+                IntPtr tokenDuplicate = IntPtr.Zero;
+
+                if (RevertToSelf())
+                {
+                    if (LogonUserA(userName, domain, password, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, ref token) != 0)
+                    {
+                        if (DuplicateToken(token, 2, ref tokenDuplicate) != 0)
+                        {
+                            tempWindowsIdentity = new WindowsIdentity(tokenDuplicate);
+                            impersonationContext = tempWindowsIdentity.Impersonate();
+                            if (impersonationContext != null)
+                            {
+                                CloseHandle(token);
+                                CloseHandle(tokenDuplicate);
+                                return true;
+                            }
+                        }
+                    }
+                }
+                if (token != IntPtr.Zero)
+                {
+                    CloseHandle(token);
+                }
+                if (tokenDuplicate != IntPtr.Zero)
+                {
+                    CloseHandle(tokenDuplicate);
+                }
+                return false;
+            }
+
+            public void UndoImpersonation()
+            {
+                impersonationContext.Undo();
+            }
+
+            // Para detectar llamadas redundantes
+            private bool disposedValue = false;
+
+            // IDisposable
+            protected virtual void Dispose(bool disposing)
+            {
+                if (!this.disposedValue)
+                {
+                    if (disposing)
+                    {
+                        // TODO: Liberar otro estado (objetos administrados).
+                    }
+
+                    // TODO: Liberar su propio estado (objetos no administrados).
+                    // TODO: Establecer campos grandes como Null.
+                }
+                this.disposedValue = true;
+            }
+
+            #region " IDisposable Support "
+            // Visual Basic agregó este código para implementar correctamente el modelo descartable.
+            public void Dispose()
+            {
+                // No cambie este código. Coloque el código de limpieza en Dispose (ByVal que se dispone como Boolean).
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+            #endregion
+
+        }
+
+    }
+}
