@@ -1,0 +1,86 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Template.Master.cs" Inherits="Target.Master.Template" %>
+
+<html lang="en">
+<head id="Head1" runat="server">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" /> 
+        <title>TargetApp</title>
+
+        <%--------------- style -----------------------------%>
+	    <link href="../Css/bootstrap.css" type="text/css" rel="stylesheet" />		
+	    <link href="../Css/target.css" rel="stylesheet" />
+        <link href="../Css/target2.css" rel="stylesheet" type="text/css" />
+        <link href="../Css/datepicker3.css" rel="stylesheet" type="text/css" />
+        <link href="../Css/botonera.css" rel="stylesheet" type="text/css" />
+       
+     <!--[if IE]>
+        <link rel="stylesheet" type="text/css" href="../Css/target-ie8.css" />
+    <![endif]-->
+
+        <%-------------------- Script -------------------------%>
+        <script src="../Scripts/jquery-1.11.2.js" type="text/javascript"></script>
+        <script src="../Scripts/bootstrap.min.js" type="text/javascript"></script>
+        <script src="../Scripts/scripts.js" type="text/javascript"></script>  
+        <script src="../Scripts/bootstrap-datepicker.min.js" type="text/javascript"></script>
+        <script src="../Scripts/bootstrap-datepicker.es.js" type="text/javascript"></script> 
+     
+        <asp:ContentPlaceHolder id="cphHeader" runat="server">
+        </asp:ContentPlaceHolder>
+       
+</head>
+<body id="page-cartera">
+
+      <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container-fluid">
+                <div id="santander" class="row">
+                <div class="navbar-header header-brand col-xs-4" style="height:70px;">
+                    <div class="navbar-brand"><img class="img-responsive" src="../Images/Template/logo_santander.png" /></div>
+		            <div class="navbar-subtitle"></div>
+		        </div> 
+                <div class="navbar-header header-title col-xs-4" style="height:70px;">
+                    <div class="navbar-title logo-scanner text-center">
+                    <img class="img-responsive" src="../Images/Template/logo_target1.png" />
+                    </div>
+                </div>
+		        <div class="navbar-header header-ejecutivo col-xs-4" style="height:70px;">
+                     <div class="navbar-ejecutivo text-left">
+                        <div class="row">
+                                <div>
+                                    <label style="font-size:14px;">Usuario: </label>
+                                    <label style="font-size:14px;">Pedro Parra</label>
+                                </div> 
+                          </div> 
+                         <div class="row">
+                                <div>
+                                    <label style="font-size:14px;">Perfil: </label>
+                                    <label style="font-size:14px;">Administrador</label>
+                                </div> 
+                          </div>  
+		            </div>   
+                </div>
+                </div><!--bar-top santander-->
+            </div>
+        </nav>
+
+    <div class='container' id='botonera' style="margin-top:30px;" runat='server'></div>
+
+        <form id="form1" runat="server">
+            <%--<div class="container-fluid">--%>
+            <div class="wrapper-content col-xs-11 col-xs-11 col-xs-offset-1 col-xs-offset-1">
+                <asp:ScriptManager ID="ScriptManager2" runat="server" EnablePageMethods="true"
+                    EnableScriptGlobalization="true" EnableScriptLocalization="true">
+                    <Scripts>
+                        <asp:ScriptReference Path="~/Js/Library.js" />                  
+                        <asp:ScriptReference Path="~/Css/AjaxProgress/jsUpdateProgress.js" />
+                    </Scripts>
+                </asp:ScriptManager>
+                     
+                <div>
+                    <asp:ContentPlaceHolder ID="cphBody" runat="server">
+                    </asp:ContentPlaceHolder>  
+                </div>
+                    
+            </div>
+        </form>
+    </body>
+</html>
+
