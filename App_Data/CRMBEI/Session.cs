@@ -29,7 +29,7 @@ namespace CRMBEI
             }
             else
             {
-                HttpContext.Current.Response.Redirect("~/Login.aspx");
+                HttpContext.Current.Response.Redirect("~/Login.aspx?r=" + Random()");
                 return "";
             }
         }
@@ -67,7 +67,7 @@ namespace CRMBEI
             }
             else
             {
-                HttpContext.Current.Response.Redirect("~/Login.aspx");
+                HttpContext.Current.Response.Redirect("~/Login.aspx?r=" + Random()");
                 return "";
             }
         }
