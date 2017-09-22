@@ -12,6 +12,7 @@ public class Global_asax : System.Web.HttpApplication
 
 	public void Application_Start(object sender, EventArgs e)
 	{
+	MvcHandler.DisableMvcResponseHeader = true;
         //// Code that runs on application startup
         //Application["app_inicio"] = DateTime.Now;
         //Application["app_sesiones"] = 0;
