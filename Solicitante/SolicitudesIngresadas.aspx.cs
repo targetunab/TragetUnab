@@ -29,6 +29,7 @@ namespace Target.Solicitud
         protected void Page_Load(object sender, EventArgs e)
         {
             rutUsuario = Request.QueryString["rut"].ToString();
+            if(rutUsuario == null){rutUsuario = 1}
             datosUsuario();
             cargaSolicitudes();
             botoneraVisible();     
