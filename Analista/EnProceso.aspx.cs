@@ -19,6 +19,7 @@ namespace Target.Analista
         protected void Page_Load(object sender, EventArgs e)
         {
             rutUsuario = Request.QueryString["rut"].ToString();
+            if (rutUsuario == null) { rutUsuario = "0"; }
             botoneraVisible();
             cargaSolicitudes();
             cargaUsuario();
@@ -37,7 +38,7 @@ namespace Target.Analista
         }
         protected void botoneraVisible()
         {
-            Master.visibleBotonera("<div class='row'><div class='btn-group btn-group-justified'><div class='btn-group'><button type='button' id='btnSolIngresadas' class='btn btn-nav'><a href='../Analista/SolicitudesAsignadas.aspx?rut=" + rutUsuario + "'><span class='glyphicon glyphicon-list'></span><p>Solicitudes Asignadas</p></a></button></div><div class='btn-group'><button type='button' id='btnGeneracion' class='btn btn-nav'><a href='../Analista/EnProceso.aspx'><span class='glyphicon glyphicon-wrench'></span><p>Generacion</p></a></button></div></div></div>");
+            Master.visibleBotonera("<div class='row'><div class='btn-group btn-group-justified'><div class='btn-group'><button type='button' id='btnSolIngresadas' class='btn btn-nav'><a href='../Analista/SolicitudesAsignadas.aspx?rut=" + rutUsuario + "'><span class='glyphicon glyphicon-list'></span><p>Solicitudes Asignadas</p></a></button></div><div class='btn-group'><button type='button' id='btnGeneracion' class='btn btn-nav'><a href='../Analista/EnProceso.aspx?rut=" + rutUsuario + "'><span class='glyphicon glyphicon-wrench'></span><p>Generacion</p></a></button></div></div></div>");
         }
         protected void cargaSolicitudes()
         {
