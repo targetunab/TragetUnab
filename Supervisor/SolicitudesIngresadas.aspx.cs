@@ -19,6 +19,7 @@ namespace Target.Supervisor
         protected void Page_Load(object sender, EventArgs e)
         {
             rutUsuario = Request.QueryString["rut"].ToString();
+            if(rutUsuario == null){rutUsuario = 1}
             botoneraVisible();
             cargaSolicitudes();  
         }
