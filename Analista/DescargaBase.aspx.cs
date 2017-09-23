@@ -23,10 +23,14 @@ namespace Target.Analista
         }
         protected void Page_Load(object sender, EventArgs e)
         {
-            idSol = Request.QueryString["id"].ToString();
-            if (idSol == null) { return; }
-            rutUsuario = Request.QueryString["rut"].ToString();
-            if (rutUsuario == null) { return; }
+            if(Request.QueryString["id"].ToString() == null)
+            {
+                idSol = Request.QueryString["id"].ToString();
+            }
+            if(Request.QueryString["rut"].ToString() == null)
+            {
+                rutUsuario = Request.QueryString["rut"].ToString();
+            }
             cargaSolicitudes();
             EjecutaDescarga();
         }
