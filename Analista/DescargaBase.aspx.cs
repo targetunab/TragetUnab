@@ -22,11 +22,11 @@ namespace Target.Analista
             set { ViewState.Add("idSol", value); }
         }
         protected void Page_Load(object sender, EventArgs e)
-        {           
+        {   
+            if (String.IsNullOrEmpty(Request.QueryString["id"])) return;
             idSol = Request.QueryString["id"].ToString();
-            if(idSol == null){Response.Redirect("../Default.aspx");}
+            if (String.IsNullOrEmpty(Request.QueryString["rut"])) return;
             rutUsuario = Request.QueryString["rut"].ToString();
-            if(rutUsuario == null){Response.Redirect("../Default.aspx");}
             cargaSolicitudes();
             EjecutaDescarga();
         }
