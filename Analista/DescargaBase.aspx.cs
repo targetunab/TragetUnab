@@ -11,14 +11,26 @@ namespace Target.Analista
 {
     public partial class DescargaBase : System.Web.UI.Page
     {
+        public string rutUsuario
+        {
+            get { return Convert.ToString(ViewState["rutUsuario"]); }
+            set { ViewState.Add("rutUsuario", value); }
+        }
+        public string idSol
+        {
+            get { return Convert.ToString(ViewState["idSol"]); }
+            set { ViewState.Add("idSol", value); }
+        }
         protected void Page_Load(object sender, EventArgs e)
         {
+            idSol = Request.QueryString["id"].ToString();
+            rutUsuario = Request.QueryString["rut"].ToString();
             cargaSolicitudes();
             EjecutaDescarga();
         }
         protected void cargaSolicitudes()
         {
-            string Sp = "SP_SEL_BASE_CLIENTES @FLAG = 2";
+            string Sp = "SP_SEL_BASE_CLIENTES @id_solicitud = "+idSol;
 
             using (DataTable dr = Conexion.GetDataTable(Sp))
             {
@@ -27,69 +39,74 @@ namespace Target.Analista
                     HtmlTableRow rowNew = new HtmlTableRow();
                     baseClientes.Controls.Add(rowNew);
 
-                    HtmlTableCell cell_id_solicitud = new HtmlTableCell("td");
-                    HtmlTableCell cell_solicitud = new HtmlTableCell("td");
-                    HtmlTableCell cell_area = new HtmlTableCell("td");
-                    HtmlTableCell cell_fec_ingreso = new HtmlTableCell("td");
-                    HtmlTableCell cell_fec_salida = new HtmlTableCell("td");
-                    HtmlTableCell cell_tipo_solicitud = new HtmlTableCell("td");
-                    HtmlTableCell cell_solicitante = new HtmlTableCell("td");
-                    HtmlTableCell cell_analista_responsable = new HtmlTableCell("td");
-                    HtmlTableCell cell_estado = new HtmlTableCell("td");
-                    HtmlTableCell cell_accion = new HtmlTableCell("td");
+                    HtmlTableCell cell_rut = new HtmlTableCell("td");
+                    HtmlTableCell cell_nombres = new HtmlTableCell("td");
+                    HtmlTableCell cell_appaterno = new HtmlTableCell("td");
+                    HtmlTableCell cell_apmaterno = new HtmlTableCell("td");
+                    HtmlTableCell cell_direccion = new HtmlTableCell("td");
+                    HtmlTableCell cell_comuna = new HtmlTableCell("td");
+                    HtmlTableCell cell_region = new HtmlTableCell("td");
+                    HtmlTableCell cell_fono = new HtmlTableCell("td");
+                    HtmlTableCell cell_mail = new HtmlTableCell("td");
 
-                    Label lblIdSolicitud = new Label();
-                    Label lblSolicitud = new Label();
-                    Label lblArea = new Label();
-                    Label lblFechaIngreso = new Label();
-                    Label lblFechaSalida = new Label();
-                    Label lblTipoSolicitud = new Label();
-                    Label lblSolicitante = new Label();
-                    Label lblAnalistaResponsable = new Label();
-                    Label lblEstado = new Label();
-                    Label lblAccion = new Label();
+                    Label lblRut = new Label();
+                    Label lblNombres = new Label();
+                    Label lblApPaterno = new Label();
+                    Label LblApMaterno = new Label();
+                    Label lblDireccion = new Label();
+                    Label lblComuna = new Label();
+                    Label lblRegion = new Label();
+                    Label LblFono = new Label();
+                    Label LblMail = new Label();
 
-                    lblIdSolicitud.Text = row["id_solicitud"].ToString();
-                    lblSolicitud.Text = row["nombre_solicitud"].ToString();
-                    lblArea.Text = row["id_area"].ToString();
-                    lblFechaIngreso.Text = row["fec_ingreso"].ToString();
-                    lblFechaSalida.Text = row["fec_salida"].ToString();
-                    lblTipoSolicitud.Text = row["tipo_solicitud"].ToString();
-                    lblSolicitante.Text = row["solicitante"].ToString();                 
+                    lblRut.Text = row["rut_cliente"].ToString();
+                    lblNombres.Text = row["nombre_cliente"].ToString();
+                    lblApPaterno.Text = row["ap_paterno"].ToString();
+                    LblApMaterno.Text = row["ap_materno"].ToString();
+                    lblDireccion.Text = row["direccion_particular"].ToString();
+                    lblComuna.Text = row["comuna"].ToString();
+                    lblRegion.Text = row["region"].ToString();
+                    LblFono.Text = row["fono"].ToString();
+                    LblMail.Text = row["mail"].ToString();
 
-                    cell_id_solicitud.Controls.Add(lblIdSolicitud);
-                    cell_solicitud.Controls.Add(lblSolicitud);
-                    cell_area.Controls.Add(lblArea);
-                    cell_fec_ingreso.Controls.Add(lblFechaIngreso);
-                    cell_fec_salida.Controls.Add(lblFechaSalida);
-                    cell_tipo_solicitud.Controls.Add(lblTipoSolicitud);
-                    cell_solicitante.Controls.Add(lblSolicitante);
-                    cell_analista_responsable.Controls.Add(lblAnalistaResponsable);
-                    cell_estado.Controls.Add(lblEstado);
-                    cell_accion.Controls.Add(lblAccion);
+                    cell_rut.Controls.Add(lblRut);
+                    cell_nombres.Controls.Add(lblNombres);
+                    cell_appaterno.Controls.Add(lblApPaterno);
+                    cell_apmaterno.Controls.Add(LblApMaterno);
+                    cell_direccion.Controls.Add(lblDireccion);
+                    cell_comuna.Controls.Add(lblComuna);
+                    cell_region.Controls.Add(lblRegion);
+                    cell_fono.Controls.Add(LblFono);
+                    cell_mail.Controls.Add(LblMail);
 
-                    cell_solicitud.Attributes.Add("class", "text-left");
-                    cell_area.Attributes.Add("class", "text-left");
-                    cell_tipo_solicitud.Attributes.Add("class", "text-left");
-                    cell_solicitante.Attributes.Add("class", "text-left");
-                    cell_analista_responsable.Attributes.Add("class", "text-left");
-                    cell_estado.Attributes.Add("class", "text-left");
 
-                    rowNew.Controls.Add(cell_id_solicitud);
-                    rowNew.Controls.Add(cell_solicitud);
-                    rowNew.Controls.Add(cell_area);
-                    rowNew.Controls.Add(cell_fec_ingreso);
-                    rowNew.Controls.Add(cell_fec_salida);
-                    rowNew.Controls.Add(cell_tipo_solicitud);
-                    rowNew.Controls.Add(cell_solicitante);
+                    cell_rut.Attributes.Add("class", "text-left");
+                    cell_nombres.Attributes.Add("class", "text-left");
+                    cell_appaterno.Attributes.Add("class", "text-left");
+                    cell_apmaterno.Attributes.Add("class", "text-left");
+                    cell_direccion.Attributes.Add("class", "text-left");
+                    cell_comuna.Attributes.Add("class", "text-left");
+                    cell_region.Attributes.Add("class", "text-left");
+                    cell_fono.Attributes.Add("class", "text-left");
+                    cell_mail.Attributes.Add("class", "text-left");
+
+                    rowNew.Controls.Add(cell_rut);
+                    rowNew.Controls.Add(cell_nombres);
+                    rowNew.Controls.Add(cell_appaterno);
+                    rowNew.Controls.Add(cell_apmaterno);
+                    rowNew.Controls.Add(cell_direccion);
+                    rowNew.Controls.Add(cell_comuna);
+                    rowNew.Controls.Add(cell_region);
+                    rowNew.Controls.Add(cell_fono);
+                    rowNew.Controls.Add(cell_mail);
                 }
             }
         }
         protected void EjecutaDescarga()
         {
             Response.ContentType = "application/vnd.ms-excel";
-            string filename = "Cascada Ampliada Cliente -" + DateTime.Now.ToShortDateString();
-            Response.AppendHeader("content-disposition", "attachment; filename=HolaMundo.xls");
+            string filename = "Base_Clientes_" + idSol;
+            Response.AppendHeader("content-disposition", "attachment; filename="+filename+".xls");
         }
     }
 }

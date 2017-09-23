@@ -28,7 +28,7 @@
                     <th class="celeste-claro text-center">Tipo Solicitud</th>
                     <th class="celeste-claro text-center">Solicitante</th>
                     <th class="celeste-claro text-center">Observación</th>
-                    <th class="celeste-claro text-center">Descargar Ficha</th>
+                    <th class="celeste-claro text-center">Ficha</th>
                 </tr>
              </thead>
              <tbody>

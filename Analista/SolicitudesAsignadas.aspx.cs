@@ -21,6 +21,20 @@ namespace Target.Analista
             rutUsuario = Request.QueryString["rut"].ToString();
             botoneraVisible();
             cargaSolicitudes();
+            cargaUsuario();
+        }
+
+        protected void cargaUsuario()
+        {
+            string Sp = "SP_SEL_USUARIOS_LOGIN @RUT_USUARIO = "+rutUsuario;
+            using (DataTable dr = Conexion.GetDataTable(Sp))
+            {
+                foreach (DataRow row in dr.Rows)
+                {
+                    Master.usuario = row["nombre_usuario"].ToString();
+                    Master.perfil = row["nombre_perfil"].ToString();
+                }
+            }
         }
 
         protected void botoneraVisible()
@@ -76,7 +90,7 @@ namespace Target.Analista
                     }
                     else
                     {
-                        lblAnalistaResponsable.Text = "<button type='button' data-toggle='modal' data-target='#myModal' class='btn btn-info btn-xs'><span class='glyphicon glyphicon-floppy-disk' aria-hidden='true'></span> Asignar</button>";
+                        lblAnalistaResponsable.Text = "<button type='button' data-toggle='modal' class='btn btn-info btn-xs'><span class='glyphicon glyphicon-floppy-disk' aria-hidden='true'></span> Asignar</button>";
                     }
                     string Estado = row["estado_solicitud"].ToString();
                     switch (Estado)

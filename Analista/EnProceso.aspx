@@ -16,15 +16,14 @@
                 <tr class="font-white">
                     <th class="celeste-claro text-center">ID</th>
                    <th class="celeste-claro text-center">Solicitud</th>
+                    <th class="celeste-claro text-center">Solicitante</th>
                    <th class="celeste-claro text-center">Area</th>
                    <th class="celeste-claro text-center">Fecha Ingreso</th>
-                   <th class="celeste-claro text-center">Fecha Salida</th>
-                   <th class="celeste-claro text-center">Tipo Solicitud</th>
-                   <th class="celeste-claro text-center">Solicitante</th>
+                   <th class="celeste-claro text-center">Fecha Salida</th>                   
                     <th class="celeste-claro text-center">Inicio</th>
                     <th class="celeste-claro text-center">Fin</th>
-                    <th class="celeste-claro text-center">Estado Generación</th>
-                   <th class="celeste-claro text-center">Progreso</th>
+                    <th class="celeste-claro text-center">Clientes</th>
+                    <th class="celeste-claro text-center">Estado Generación</th>                  
                 </tr>
              </thead>
              <tbody>

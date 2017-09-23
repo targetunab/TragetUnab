@@ -9,8 +9,7 @@
               });
            </script>
         
-    <h3>Solicitudes Asignadas</h3>
-    <button type='button'  title='Descarga' runat="server" onserverclick="Unnamed_ServerClick" class='btn btn-success btn-xs'><span class='glyphicon glyphicon-download-alt' aria-hidden='true'></span></button>
+    <h3>Solicitudes Asignadas</h3> 
     <div style="margin-left: 20px; margin-right:20px;">
         <table class="table-clientes table table-bordered table-striped small-thead" id="solicitudesIngresadas" runat="server">
 			<thead>

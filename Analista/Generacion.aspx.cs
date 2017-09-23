@@ -36,6 +36,20 @@ namespace Target.Analista
                 cargaFechaCompras();
                 cargaDatosSolicitud();
             }
+            cargaUsuario();
+        }
+
+        protected void cargaUsuario()
+        {
+            string Sp = "SP_SEL_USUARIOS_LOGIN @RUT_USUARIO = " + rutUsuario;
+            using (DataTable dr = Conexion.GetDataTable(Sp))
+            {
+                foreach (DataRow row in dr.Rows)
+                {
+                    Master.usuario = row["nombre_usuario"].ToString();
+                    Master.perfil = row["nombre_perfil"].ToString();
+                }
+            }
         }
 
         protected void botoneraVisible()
@@ -116,6 +130,7 @@ namespace Target.Analista
                     lblSolicitante.InnerText = row["solicitante"].ToString();
                     lblTipoSolicitud.InnerText = row["tipo_solicitud"].ToString();
                     lblObservacion.InnerText = row["observacion"].ToString();
+                    lblDescargar.InnerHtml = "<a href='../Fichas/Ficha_Solicitud_" + row["id_solicitud"].ToString() + ".xlsx' class='btn btn-success btn-xs'><span class='glyphicon glyphicon-download-alt' aria-hidden='true'></span> Descargar</a>";
                 }
             }
         }

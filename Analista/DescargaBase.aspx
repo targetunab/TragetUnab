@@ -13,16 +13,15 @@
           <table class="table-clientes table table-bordered table-striped small-thead" id="baseClientes" runat="server">
 			<thead>
                 <tr class="font-white">
-                   <th class="celeste-claro text-center">ID</th>
-                   <th class="celeste-claro text-center">Solicitud</th>
-                   <th class="celeste-claro text-center">Area</th>
-                   <th class="celeste-claro text-center">Fecha Ingreso</th>
-                   <th class="celeste-claro text-center">Fecha Salida</th>
-                   <th class="celeste-claro text-center">Tipo Solicitud</th>
-                   <th class="celeste-claro text-center">Solicitante</th>
-                   <th class="celeste-claro text-center">Analista Responsable</th>
-                   <th class="celeste-claro text-center">Estado</th>
-                   <th class="celeste-claro text-center">Acción</th>
+                   <th class="celeste-claro text-center">Rut</th>
+                   <th class="celeste-claro text-center">Nombre</th>
+                   <th class="celeste-claro text-center">Ap. Paterno</th>
+                   <th class="celeste-claro text-center">Ap. Materno</th>
+                   <th class="celeste-claro text-center">Dirección</th>
+                   <th class="celeste-claro text-center">Comuna</th>
+                   <th class="celeste-claro text-center">Región</th>
+                   <th class="celeste-claro text-center">Fono</th>
+                   <th class="celeste-claro text-center">Mail</th>             
                 </tr>
              </thead>
              <tbody>
