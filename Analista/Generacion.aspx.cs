@@ -25,9 +25,9 @@ namespace Target.Analista
         protected void Page_Load(object sender, EventArgs e)
         {
             id_solicitud = Request.QueryString["id"].ToString();
-            if (id_solicitud == null) { return; }
+            if (id_solicitud == null) { id_solicitud = 1 }
             rutUsuario = Request.QueryString["rut"].ToString();
-            if (rutUsuario == null) { return; }
+            if (rutUsuario == null) { rutUsuario = 1 }
             botoneraVisible();
             if (!IsPostBack)
             {
