@@ -25,7 +25,9 @@ namespace Target.Supervisor
         protected void Page_Load(object sender, EventArgs e)
         {
             idSol = Request.QueryString["id"].ToString();
+            if(idSol == null){idSol = 1}
             rutUsuario = Request.QueryString["rut"].ToString();
+            if(rutUsuario == null){rutUsuario = 1}
             botoneraVisible();
             cargaSolicitudes();
             cargaComboAnalista();
