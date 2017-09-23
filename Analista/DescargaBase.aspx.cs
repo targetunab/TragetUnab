@@ -24,15 +24,9 @@ namespace Target.Analista
         protected void Page_Load(object sender, EventArgs e)
         {
             idSol = Request.QueryString["id"].ToString();
-<<<<<<< HEAD
-            if (idSol == null) { idSol = "0"; }
+            if (idSol == null) { return; }
             rutUsuario = Request.QueryString["rut"].ToString();
-            if (rutUsuario == null) { rutUsuario = "0"; }
-=======
-            if(idSol == null){idSol = 1}
-            rutUsuario = Request.QueryString["rut"].ToString();
-            if(rutUsuario == null){rutUsuario = 1}
->>>>>>> dbbc53796d875abd527109aaa4cd518d6e963b30
+            if (rutUsuario == null) { return; }
             cargaSolicitudes();
             EjecutaDescarga();
         }
