@@ -10,7 +10,7 @@
 namespace Target.Administrador {
     
     
-    public partial class AdministrarUsuarios {
+    public partial class EditarUsuario {
         
         /// <summary>
         /// Control formCreditoUnaCuotaCuoton.
@@ -94,13 +94,31 @@ namespace Target.Administrador {
         protected global::System.Web.UI.WebControls.TextBox txtEmail;
         
         /// <summary>
-        /// Control btnInsertarUsuario.
+        /// Control cboEstado.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnInsertarUsuario;
+        protected global::System.Web.UI.WebControls.DropDownList cboEstado;
+        
+        /// <summary>
+        /// Control btnEditarUsuario.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnEditarUsuario;
+        
+        /// <summary>
+        /// Control btnNuevoUsuario.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnNuevoUsuario;
         
         /// <summary>
         /// Control tblUsuarios.

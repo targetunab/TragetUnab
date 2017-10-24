@@ -10,7 +10,7 @@ using System.Web.UI.WebControls;
 
 namespace Target.Administrador
 {
-    public partial class AdministrarUsuarios : System.Web.UI.Page
+    public partial class EditarUsuario : System.Web.UI.Page
     {
         public string rutUsuario
         {
@@ -27,9 +27,15 @@ namespace Target.Administrador
             get { return Convert.ToString(ViewState["area"]); }
             set { ViewState.Add("area", value); }
         }
+        public string usuarioEditar
+        {
+            get { return Convert.ToString(ViewState["usuarioEditar"]); }
+            set { ViewState.Add("usuarioEditar", value); }
+        }
         protected void Page_Load(object sender, EventArgs e)
         {
             rutUsuario = Request.QueryString["rut"].ToString();
+            usuarioEditar = Request.QueryString["usuario"].ToString();
             if (rutUsuario == null) { return; }
             botoneraVisible();
             divError.Visible = false;
@@ -37,10 +43,12 @@ namespace Target.Administrador
             {
                 cargaComboArea();
                 cargaComboPerfil();
+                cargaEstado();
+                cargaDatosUsuario();
 
             }
             cargaUsuario();
-            cargaUsuarios();
+            cargaUsuarios();       
         }
         protected void cargaUsuario()
         {
@@ -82,10 +90,14 @@ namespace Target.Administrador
                 }
             }
         }
-
-        protected void insertarUsuario(object sender, EventArgs e)
+        protected void cargaEstado()
         {
-            string exito = "";
+            cboEstado.Items.Insert(0, "Activo");
+            cboEstado.Items.Insert(0, "Inactivo");
+        }
+
+        protected void editarUsuario(object sender, EventArgs e)
+        {
             if (txtRutUsuario.Text == "" || txtNombreUsuario.Text == "" || txtCargo.Text == "" || cboArea.Text == "Seleccione un Tipo" || cboPerfil.Text == "Seleccione un Tipo" || txtEmail.Text == "")
             {
                 divError.InnerText = "Debe ingresar todos los campos obligatorios";
@@ -93,7 +105,7 @@ namespace Target.Administrador
             }
             else
             {
-                SqlCommand cmdExecute = Conexion.GetCommand("SP_INS_USUARIO");
+                SqlCommand cmdExecute = Conexion.GetCommand("SP_UPD_USUARIO");
                 int perfil = 0;
 
                 if (cboPerfil.SelectedValue == "Administrador")
@@ -113,6 +125,12 @@ namespace Target.Administrador
                     perfil = 4;
                 }
 
+                int estado = 0;
+                if (cboEstado.SelectedValue == "Activo")
+                {
+                    estado = 1;
+                }
+
                 string area = cboArea.SelectedValue;
                 string[] areaSplit = area.Split(' ');
                 string areaOK = areaSplit[0];
@@ -123,13 +141,14 @@ namespace Target.Administrador
                 cmdExecute.Parameters.AddWithValue("@cod_area", areaOK);
                 cmdExecute.Parameters.AddWithValue("@cod_perfil", perfil);
                 cmdExecute.Parameters.AddWithValue("@email", txtEmail.Text);
+                cmdExecute.Parameters.AddWithValue("@activo", estado);
 
                 cmdExecute.ExecuteNonQuery();
                 cmdExecute.Connection.Close();
 
                 limpiaFormulario();
 
-                Tools.tools.ClientAlert("Usuario Ingresado Exitosamente");
+                Tools.tools.ClientAlert("Usuario Editado Exitosamente");
             }
         }
         protected void limpiaFormulario()
@@ -159,7 +178,7 @@ namespace Target.Administrador
                     HtmlTableCell cell_estado = new HtmlTableCell("td");
                     HtmlTableCell cell_accion = new HtmlTableCell("td");
 
-                    Label lblRut= new Label();
+                    Label lblRut = new Label();
                     Label lblNombre = new Label();
                     Label lblcargo = new Label();
                     Label lblArea = new Label();
@@ -174,7 +193,7 @@ namespace Target.Administrador
                     lblArea.Text = row["nombre_area"].ToString();
                     lblPerfil.Text = row["nombre_perfil"].ToString();
                     lblEmail.Text = row["email"].ToString();
-                    lblAccion.Text = "<a href='EditarUsuario.aspx?rut=" + rutUsuario + "&usuario=" + row["rut_usuario"].ToString() + "' class='btn btn-info btn-xs'><span class='glyphicon glyphicon-floppy-disk' aria-hidden='true'></span> Editar</a>";   
+                    lblAccion.Text = "<a href='EditarUsuario.aspx?rut=" + rutUsuario + "&usuario=" + row["rut_usuario"].ToString() + "' class='btn btn-info btn-xs'><span class='glyphicon glyphicon-floppy-disk' aria-hidden='true'></span> Editar</a>";
 
                     string Estado = row["activo"].ToString();
                     switch (Estado)
@@ -203,6 +222,7 @@ namespace Target.Administrador
                     cell_area.Attributes.Add("class", "text-left");
                     cell_perfil.Attributes.Add("class", "text-left");
                     cell_email.Attributes.Add("class", "text-left");
+                    cell_estado.Attributes.Add("class", "text-left");
 
                     rowNew.Controls.Add(cell_rut);
                     rowNew.Controls.Add(cell_nombre);
@@ -214,6 +234,36 @@ namespace Target.Administrador
                     rowNew.Controls.Add(cell_accion);
                 }
             }
+        }
+        protected void cargaDatosUsuario()
+        {
+            string Sp = "SP_SEL_USUARIO @RUT_USUARIO = "+usuarioEditar;
+
+            using (DataTable dr = Conexion.GetDataTable(Sp))
+            {
+                foreach (DataRow row in dr.Rows)
+                {
+                    txtRutUsuario.Text = row["rut_usuario"].ToString();
+                    txtRutUsuario.Enabled = false;
+                    txtNombreUsuario.Text = row["nombre_usuario"].ToString();
+                    txtCargo.Text = row["cargo"].ToString();
+                    txtEmail.Text = row["email"].ToString();
+                    cboArea.Text = row["id_area"].ToString()+" - "+row["nombre_area"].ToString();
+                    cboPerfil.Text = row["nombre_perfil"].ToString();
+                    if (row["activo"].ToString() == "1")
+                    {
+                        cboEstado.Text = "Activo";
+                    }
+                    else
+                    {
+                        cboEstado.Text = "Inactivo";
+                    }
+                }
+            }
+        }
+        protected void nuevoUsuario(object sender, EventArgs e)
+        {
+            Response.Redirect("AdministrarUsuarios.aspx?rut=" + rutUsuario);
         }
     }
 }

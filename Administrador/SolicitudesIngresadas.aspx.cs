@@ -11,14 +11,33 @@ namespace Target.Administrador
 {
     public partial class SolicitudesIngresadas : System.Web.UI.Page
     {
+        public string rutUsuario
+        {
+            get { return Convert.ToString(ViewState["rutUsuario"]); }
+            set { ViewState.Add("rutUsuario", value); }
+        }
         protected void Page_Load(object sender, EventArgs e)
         {
+            rutUsuario = Request.QueryString["rut"].ToString();
             botoneraVisible();
             cargaSolicitudes();
+            cargaUsuario();
         }
-         protected void botoneraVisible()
+        protected void cargaUsuario()
         {
-            Master.visibleBotonera("<div class='row'><div class='btn-group btn-group-justified'><div class='btn-group'><button type='button' id='btnSolIngres' class='btn btn-nav'><a href='../Supervisor/SolicitudesIngresadas.aspx'><span class='glyphicon glyphicon-plus'></span><p>Solicitudes Ingresdas</p></a></button></div><div class='btn-group'><button type='button' id='btnSeguimiento' class='btn btn-nav'><a href='../Reportes/Reportes.aspx'><span class='glyphicon glyphicon-user'></span><p>Usuarios</p></a></button></div><div class='btn-group'><button type='button' id='btnSeguimiento' class='btn btn-nav'><a href='../Reportes/Reportes.aspx'><span class='glyphicon glyphicon-cog'></span><p>Parametros de Negocio</p></a></button></div></div></div>");
+            string Sp = "SP_SEL_USUARIOS_LOGIN @RUT_USUARIO = " + rutUsuario;
+            using (DataTable dr = Conexion.GetDataTable(Sp))
+            {
+                foreach (DataRow row in dr.Rows)
+                {
+                    Master.usuario = row["nombre_usuario"].ToString();
+                    Master.perfil = row["nombre_perfil"].ToString();
+                }
+            }
+        }
+        protected void botoneraVisible()
+        {
+            Master.visibleBotonera("<div class='row'><div class='btn-group btn-group-justified'><div class='btn-group'><button type='button' id='btnSolIngres' class='btn btn-nav'><a href='../Administrador/SolicitudesIngresadas.aspx?rut=" + rutUsuario + "'><span class='glyphicon glyphicon-plus'></span><p>Solicitudes Ingresdas</p></a></button></div><div class='btn-group'><button type='button' id='btnUsuarios' class='btn btn-nav'><a href='../Administrador/AdministrarUsuarios.aspx?rut=" + rutUsuario + "''><span class='glyphicon glyphicon-user'></span><p>Usuarios</p></a></button></div><div class='btn-group'><button type='button' id='btnParametros' class='btn btn-nav'><a href='../Administrador/AdministrarParametros.aspx?rut=" + rutUsuario + "''><span class='glyphicon glyphicon-cog'></span><p>Parametros de Negocio</p></a></button></div></div></div>");
         }
 
         protected void cargaSolicitudes()
@@ -51,24 +70,17 @@ namespace Target.Administrador
                     Label lblSolicitante = new Label();
                     Label lblAnalistaResponsable = new Label();
                     Label lblEstado = new Label();
+                    Button botonAsignar = new Button();
 
                     lblIdSolicitud.Text = row["id_solicitud"].ToString();
                     lblSolicitud.Text = row["nombre_solicitud"].ToString();
                     lblArea.Text = row["nombre_area"].ToString();
-                    lblFechaIngreso.Text = row["fec_ingreso"].ToString();
-                    lblFechaSalida.Text = row["fec_salida"].ToString();
+                    lblFechaIngreso.Text = Convert.ToDateTime(row["fec_ingreso"]).ToString("dd/MM/yyyy");
+                    lblFechaSalida.Text = Convert.ToDateTime(row["fec_salida"]).ToString("dd/MM/yyyy");
                     lblTipoSolicitud.Text = row["tipo_solicitud"].ToString();
                     lblSolicitante.Text = row["solicitante"].ToString();
-                    
-                    string analista = row["analista"].ToString();
-                    if (analista != "No Asignada")
-                    {
-                        lblAnalistaResponsable.Text = row["analista"].ToString();
-                    }
-                    else
-                    {
-                        lblAnalistaResponsable.Text = "<button type='button' data-toggle='modal' data-target='#myModal' class='btn btn-info btn-xs'><span class='glyphicon glyphicon-floppy-disk' aria-hidden='true'></span> Asignar</button>";
-                    }
+                    lblAnalistaResponsable.Text = row["analista"].ToString();
+
                     string Estado = row["estado_solicitud"].ToString();
                     switch (Estado)
                     {
@@ -86,6 +98,10 @@ namespace Target.Administrador
 
                         case "4":
                             lblEstado.Text = "<button type='button' class='btn btn-success btn-xs'><span class='glyphicon glyphicon-ok' aria-hidden='true'></span> Finalizada</button>";
+                            break;
+
+                        case "5":
+                            lblEstado.Text = "<button type='button' class='btn btn-warning btn-xs'><span class='glyphicon glyphicon-ok' aria-hidden='true'></span> Devuelta</button>";
                             break;
                     }
 
