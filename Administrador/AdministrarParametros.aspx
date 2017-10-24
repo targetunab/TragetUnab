@@ -1,18 +1,15 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" MasterPageFile="~/Master/Template.Master" CodeBehind="AdministrarParametros.aspx.cs" Inherits="Target.Administrador.AdministrarParametros" %>
-<%@ MasterType virtualpath="~/Master/Template.Master" %>
+<%@ MasterType VirtualPath="~/Master/Template.Master" %>
 
-<!DOCTYPE html>
+<asp:Content ID="contentBody" ContentPlaceHolderID="cphBody" runat="server">
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title></title>
-</head>
-<body>
-    <form id="form1" runat="server">
-    <div>
-    
-    </div>
-    </form>
-</body>
-</html>
+    <script type="text/javascript">
+        $(function () {
+            $('#btnParametros').addClass('active');
+        });
+    </script>
+    <h3>Parametros de Negocio</h3>
+
+
+
+</asp:Content>
