@@ -35,8 +35,9 @@ namespace Target.Administrador
         protected void Page_Load(object sender, EventArgs e)
         {
             rutUsuario = Request.QueryString["rut"].ToString();
-            usuarioEditar = Request.QueryString["usuario"].ToString();
             if(rutUsuario == null){rutUsuario = 1}
+            usuarioEditar = Request.QueryString["usuario"].ToString();
+            if(usuarioEditar == null){usuarioEditar = 1}
             botoneraVisible();
             divError.Visible = false;
             if (!IsPostBack)
