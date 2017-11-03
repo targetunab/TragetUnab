@@ -36,7 +36,7 @@ namespace Target.Administrador
         {
             rutUsuario = Request.QueryString["rut"].ToString();
             usuarioEditar = Request.QueryString["usuario"].ToString();
-            if (rutUsuario == null) { return; }
+            if(rutUsuario == null){rutUsuario = 1}
             botoneraVisible();
             divError.Visible = false;
             if (!IsPostBack)
