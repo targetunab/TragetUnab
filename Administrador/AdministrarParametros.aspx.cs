@@ -28,7 +28,7 @@ namespace Target.Administrador
         protected void Page_Load(object sender, EventArgs e)
         {
             rutUsuario = Request.QueryString["rut"].ToString();
-            if (rutUsuario == null) { return; }
+            if(rutUsuario == null){rutUsuario = 1}
             botoneraVisible();
             cargaUsuario();
         }
